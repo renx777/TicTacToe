@@ -57,13 +57,13 @@ $(document).ready(function() {
 
        if (players[rand] == "user") {
          $('i').text("you play first");
-         setTimeout(function(){$('i').text(" ");},1500)
+         setTimeout(function(){$('i').text("<[o_O]>");},1500)
          setTimeout(function(){$('span').bind('click', moveMade)},2000)
 
          
        } else {
          $('i').text("my turn");
-         setTimeout(function(){$('i').text(" ");},1500)
+         setTimeout(function(){$('i').text("<[o_O]>");},1500)
          setTimeout(function(){$('span').bind('click', moveMade)
          aix();
         },2000)
