@@ -5,6 +5,7 @@ $(document).ready(function() {
      
      var g = [0, 1, 2, 3, 4, 5, 6, 7, 8]
      var userchoice, compchoice;
+    //  all possible three pair moves
      var m = [
        ["zero", "one", "two"],
        ["zero", "three", "six"],
@@ -15,25 +16,33 @@ $(document).ready(function() {
        ["zero", "four", "eight"],
        ["two", "five", "eight"]
      ]
-     var pcount = 0;
-    
+    //  keeps track of number of moves made by either players
+     var numOfMoves = 0;
+    // gotta name variables better
+    // t and h are arrays to ids of span items
      var t = [];
      var h = [];
+    //  push ids of all span in t and h array
      $('span').each(function() {
        t.push(this.id);
        h.push(this.id);
      })
    
-    
-   $('.tt').hide()
+    // hide the gameBoard at the start of the game
+   $('.gameBoard').hide()
    $('.dis').css('margin-top','150px')
+
+
+  //  when user chooses his symbol,show the board and randomly decide whether user or computer to make the first move
      $('.btn').on('click', function() {
-       $('.dis').css('margin-top','5px')
-       $('.btn').css('visibility','hidden')
-      $('.tt').show()
       
-      $('span').unbind('click', clk);
-       
+      $('.dis').css('margin-top','5px')
+       $('.btn').css('visibility','hidden')
+      $('.gameBoard').show()
+      
+      $('span').unbind('click', moveMade);
+      
+      // alternating the user and comp choices
        if (this.id == "X") {
          userchoice = "X";
          compchoice = "O"
@@ -41,17 +50,24 @@ $(document).ready(function() {
          userchoice = "O";
          compchoice = "X"
        }
+
+      //  randomnly deciding to let user or ai play the first move
        var players = ["user", "ai"];
        var rand = Math.floor(Math.random() * players.length);
+
        if (players[rand] == "user") {
          $('i').text("you play first");
          setTimeout(function(){$('i').text(" ");},1500)
-         $('span').bind('click', clk)
+         setTimeout(function(){$('span').bind('click', moveMade)},2000)
+
+         
        } else {
          $('i').text("my turn");
-          setTimeout(function(){$('i').text(" ");},1500)
-          $('span').bind('click', clk)
+         setTimeout(function(){$('i').text(" ");},1500)
+         setTimeout(function(){$('span').bind('click', moveMade)
          aix();
+        },2000)
+         
         
          
    
@@ -59,9 +75,19 @@ $(document).ready(function() {
    
      })
    
-     function clk() {
+   /* 
+   when either of player makes move,moveMade funtion is called
+   ---> checks if numOfMoves is greater than 8,if it is checks there is any winner by calling checkWinner function
+        --->if there isn't a winner by now,game is considered draw and board is reloded for new game instance
+   */
+
+
+
+
+     function moveMade() {
    
-       if (pcount >= 8) {
+      // check if game is a draw
+       if (numOfMoves >= 8) {
          if (checkwinner(userchoice) != "winner") {
            $('i').text("game is a draw");
            setTimeout(function(){location.reload(true);
@@ -72,8 +98,9 @@ $(document).ready(function() {
          }
        }
    
-       pcount++
+       numOfMoves++
    
+    // check if 3 pair move is made,and remove if it has
        for (var i = 0; i < m.length; i++) {
          var coun = 0;
          for (j = 0; j < m[i].length; j++) {
@@ -90,8 +117,10 @@ $(document).ready(function() {
    
        $("#" + this.id).text(userchoice).css('color','black');
        
-       $("#" + this.id).unbind('click', clk);
+      //  unbind click event on already clicked cells, so that user wont be able to click it again
+       $("#" + this.id).unbind('click', moveMade);
    
+    // removed clicked cell from possible moves array
        for (var i = 0; i < m.length; i++) {
    
          for (var j = 0; j < m[i].length; j++) {
@@ -113,16 +142,10 @@ $(document).ready(function() {
        aix();
      }
    
+    //  function which lets ai decide move
      function aix() {
-       if (pcount >= 8) {
-         if (checkwinner(compchoice) != "winner") {
-           $('i').text("game is a draw");
-           location.reload(true);
-           
-   
-         }
-       }
-       pcount++
+      
+       numOfMoves++
        var choice = ai();
    
        if (choice == compchoice || choice == userchoice) {
@@ -149,11 +172,22 @@ $(document).ready(function() {
        g.splice(h.indexOf(choice), 1, compchoice);
        t.splice(t.indexOf(choice), 1);
        checkwinner(compchoice);
-       console.log(pcount)
+       console.log(numOfMoves)
    
+       if (numOfMoves >= 8) {
+        if (checkwinner(compchoice) != "winner") {
+          $('i').text("game is a draw");
+          setTimeout(function(){location.reload(true);
+          },2000)
+          
+  
+        }
+      }
+
+
      }
    
-     $('span').click(clk)
+     $('span').click(moveMade)
    
      function ai() {
    
